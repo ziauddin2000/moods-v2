@@ -1,0 +1,44 @@
+export default function TilesIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+    >
+      <rect
+        x="0.656494"
+        y="0.428223"
+        width="5.61145"
+        height="5.61145"
+        rx="1"
+        fill="#BFB7B0"
+      />
+      <rect
+        x="0.657959"
+        y="8.05469"
+        width="5.61"
+        height="5.61"
+        rx="1"
+        fill="#BFB7B0"
+      />
+      <rect
+        x="8.20435"
+        y="0.335205"
+        width="5.61"
+        height="5.61"
+        rx="1"
+        fill="#BFB7B0"
+      />
+      <rect
+        x="8.20435"
+        y="8.05469"
+        width="5.61"
+        height="5.61"
+        rx="1"
+        fill="#BFB7B0"
+      />
+    </svg>
+  );
+}
