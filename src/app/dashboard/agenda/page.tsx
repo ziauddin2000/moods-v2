@@ -332,10 +332,10 @@ export default function Agenda() {
   }
 
   return (
-    <div className="py-5 lg:py-10 grid grid-cols-1 gap-y-3 lg:gap-0 lg:grid-cols-12 ">
+    <div className="py-5 lg:py-10 grid grid-cols-1 gap-y-3 lg:gap-0 lg:grid-cols-12 min-h-[92vh]">
       {/* Left */}
       <div className="lg:col-span-4 2xl:col-span-3">
-        <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl lg:rounded-none lg:rounded-tl-xl lg:rounded-bl-xl p-5 xl:p-10">
+        <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl lg:rounded-none lg:rounded-tl-xl lg:rounded-bl-xl p-5 xl:p-10 h-full">
           <AgendaCalendar
             date={selectedDate || undefined}
             setDate={onDateChange}
@@ -349,7 +349,7 @@ export default function Agenda() {
       </div>
 
       {/* Right */}
-      <div className="lg:col-span-8 2xl:col-span-8">
+      <div className="lg:col-span-8 2xl:col-span-9">
         <div className="bg-linear-to-bl from-gr-light to-darkgreen rounded-xl lg:rounded-none lg:rounded-tr-xl lg:rounded-br-xl p-5 full-calendar-wrapper h-[500px] lg:h-full w-full overflow-x-auto">
           <div style={{ minWidth: 600, width: "100%", height: "100%" }}>
             <FullCalendar
