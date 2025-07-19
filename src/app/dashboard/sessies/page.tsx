@@ -279,27 +279,141 @@ function Pagination({
   );
 }
 
+function FilteredData({
+  rooms,
+  value,
+  onSelect,
+}: {
+  rooms: Room[];
+  value: string;
+  onSelect: (name: string) => void;
+}) {
+  const [inputValue, setInputValue] = useState(value || "");
+  const [open, setOpen] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Filter rooms as you type
+  const filteredRooms = rooms.filter((room) =>
+    room.name.toLowerCase().includes(inputValue.toLowerCase())
+  );
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        open &&
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  // When opening, decide direction
+  const handleOpen = () => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setDropUp(spaceBelow < 300 && spaceAbove > spaceBelow);
+    }
+    setOpen(true);
+  };
+
+  return (
+    <div className="relative w-full max-w-[400px]" ref={containerRef}>
+      <input
+        ref={inputRef}
+        value={inputValue}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+          handleOpen();
+        }}
+        onFocus={handleOpen}
+        placeholder="Selecteer een kamer"
+        className="w-full cursor-pointer rounded-3xl shadow-none border border-primary-beige text-base py-3 pl-5 pr-12 bg-transparent text-primary-beige focus-visible:outline-none"
+        autoComplete="off"
+      />
+      {/* Down arrow toggle button */}
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => {
+          if (!open) handleOpen();
+          else setOpen(false);
+        }}
+        className="absolute top-1/2 right-4 -translate-y-1/2 flex justify-center items-center rounded cursor-pointer"
+      >
+        <Image src="/icons/downArrow.svg" width={15} height={15} alt="Down" />
+      </button>
+      {/* Clear button */}
+      {inputValue && (
+        <button
+          onClick={() => {
+            setInputValue("");
+            setOpen(true);
+            onSelect("");
+          }}
+          className="absolute top-1/2 right-10 -translate-y-1/2  h-5 w-5 flex justify-center items-center rounded cursor-pointer"
+          tabIndex={-1}
+          type="button"
+        >
+          <Image
+            src="/icons/closeIcon.svg"
+            width={10}
+            height={10}
+            alt="Close"
+          />
+        </button>
+      )}
+      {open && (
+        <div
+          className={`filter-dropdown absolute left-0 right-0 z-10 bg-linear-to-r from-green3 to-green3 border border-secondary-beige max-h-[300px] overflow-y-auto rounded-md p-2 shadow-md
+            ${dropUp ? "bottom-full mb-1" : "top-full mt-1"}
+          `}
+        >
+          {filteredRooms.length > 0 ? (
+            filteredRooms.map((room) => (
+              <div
+                key={room.name}
+                className={`px-2 py-2 text-primary-beige cursor-pointer hover:bg-primary-beige hover:text-rich-black rounded ${
+                  inputValue === room.name
+                    ? "bg-primary-beige text-rich-black"
+                    : ""
+                }`}
+                onMouseDown={() => {
+                  setInputValue(room.name);
+                  setOpen(false);
+                  onSelect(room.name);
+                }}
+              >
+                {room.name}
+              </div>
+            ))
+          ) : (
+            <div className="px-2 py-2 text-primary-beige">Geen resultaten</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Sessies(): React.ReactElement {
   const [view, setView] = useState<string>("Tegels");
   const [page, setPage] = useState<number>(1);
 
   // --- Room Filter State ---
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
-
-  // --- Dropdown Search State ---
-  const [search, setSearch] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Get unique room names from rooms
-  const uniqueRooms: string[] = Array.from(
-    new Set(rooms.map((room) => room.name))
-  );
-
-  // Filter uniqueRooms by search input
-  const filteredUniqueRooms: string[] = uniqueRooms.filter((roomName) =>
-    roomName.toLowerCase().includes(search.toLowerCase())
-  );
 
   // Filter rooms by selected room name
   const filteredRooms: Room[] = selectedRoom
@@ -310,20 +424,6 @@ export default function Sessies(): React.ReactElement {
     (page - 1) * PAGE_SIZE,
     page * PAGE_SIZE
   );
-
-  // Clear filter function
-  const handleClear = (): void => {
-    setSelectedRoom(null);
-    setPage(1);
-    setSearch("");
-  };
-
-  // Focus input when dropdown opens
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 10);
-    }
-  }, [open, search]);
 
   return (
     <div className="py-5 lg:py-10 grid grid-cols-1 gap-y-3 lg:gap-0 lg:grid-cols-12 ">
@@ -338,77 +438,15 @@ export default function Sessies(): React.ReactElement {
               <span>Vind een kamer</span>
             </h2>
 
-            {/* Room Dropdown with search */}
-            <Select
+            {/* Room Dropdown with search functionality*/}
+            <FilteredData
+              rooms={rooms}
               value={selectedRoom || ""}
-              onValueChange={(value: string) => {
-                setSelectedRoom(value);
+              onSelect={(roomName) => {
+                setSelectedRoom(roomName);
                 setPage(1);
-                setOpen(false);
               }}
-              open={open}
-              onOpenChange={(isOpen: boolean) => {
-                setOpen(isOpen);
-                if (!isOpen) setSearch("");
-              }}
-            >
-              <div className="relative">
-                <SelectTrigger className="agenda-dropdown w-full cursor-pointer rounded-3xl shadow-none border-primary-beige text-base py-5 relative">
-                  <SelectValue placeholder="Selecteer een kamer" />
-                </SelectTrigger>
-
-                {/* clear button */}
-                <button
-                  onClick={handleClear}
-                  className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige h-5 w-5 flex justify-center items-center rounded cursor-pointer"
-                >
-                  <Image
-                    src="/icons/closeIcon.svg"
-                    width={10}
-                    height={10}
-                    alt="Close"
-                  />
-                </button>
-              </div>
-
-              <SelectContent className="bg-linear-to-r from-green3 to to-green3 border border-secondary-beige max-h-[300px] overflow-y-auto relative">
-                <div
-                  className="px-2 py-2 "
-                  onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
-                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                >
-                  <input
-                    ref={inputRef}
-                    value={search}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearch(e.target.value)
-                    }
-                    placeholder="Zoek kamer..."
-                    className="w-full px-2 py-1 rounded border border-primary-beige bg-transparent text-primary-beige"
-                    onFocus={(e: React.FocusEvent) => e.stopPropagation()}
-                  />
-                </div>
-                {filteredUniqueRooms.length > 0 ? (
-                  filteredUniqueRooms.map((roomName: string) => (
-                    <SelectItem
-                      key={roomName}
-                      value={roomName}
-                      className={`text-primary-beige ${
-                        selectedRoom === roomName
-                          ? "bg-primary-beige text-rich-black"
-                          : ""
-                      }`}
-                    >
-                      {roomName}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <div className="px-2 py-2 text-primary-beige">
-                    Geen resultaten
-                  </div>
-                )}
-              </SelectContent>
-            </Select>
+            />
           </div>
         </div>
       </div>

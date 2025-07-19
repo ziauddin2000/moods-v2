@@ -1,15 +1,5 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import React from "react";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
 import SideLink from "../_components/sideLink";
 import List from "./_components/list";
 import { PaginationProps, PastSession } from "@/types/sessies";
@@ -280,23 +270,151 @@ function Pagination({
   );
 }
 
+function FilteredData({
+  sessions,
+  value,
+  onSelect,
+  onClear,
+}: {
+  sessions: string[];
+  value: string;
+  onSelect: (name: string) => void;
+  onClear: () => void;
+}) {
+  const [inputValue, setInputValue] = useState(value || "");
+  const [open, setOpen] = useState(false);
+  const [dropUp, setDropUp] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Filter sessions as you type
+  const filteredSessions = sessions.filter((session) =>
+    session.toLowerCase().includes(inputValue.toLowerCase())
+  );
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        open &&
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    setInputValue(value || "");
+  }, [value]);
+
+  // When opening, decide direction
+  const handleOpen = () => {
+    if (inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setDropUp(spaceBelow < 300 && spaceAbove > spaceBelow);
+    }
+    setOpen(true);
+  };
+
+  return (
+    <div className="relative w-full max-w-[400px]" ref={containerRef}>
+      <input
+        ref={inputRef}
+        value={inputValue}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+          handleOpen();
+        }}
+        onFocus={handleOpen}
+        onBlur={() => setTimeout(() => setOpen(false), 100)}
+        placeholder="Selecteer een kamer"
+        className="w-full cursor-pointer rounded-3xl shadow-none border border-primary-beige text-base py-3 pl-5 pr-12 bg-transparent text-primary-beige focus-visible:outline-none"
+        autoComplete="off"
+      />
+      {/* Down arrow toggle button */}
+      <button
+        type="button"
+        tabIndex={-1}
+        onClick={() => {
+          if (!open) handleOpen();
+          else setOpen(false);
+        }}
+        className="absolute top-1/2 right-4 -translate-y-1/2 flex justify-center items-center rounded cursor-pointer"
+      >
+        <Image src="/icons/downArrow.svg" width={15} height={15} alt="Down" />
+      </button>
+      {/* Clear button */}
+      {inputValue && (
+        <button
+          onClick={() => {
+            setInputValue("");
+            setOpen(true);
+            onClear();
+          }}
+          className="absolute top-1/2 right-10 -translate-y-1/2 h-5 w-5 flex justify-center items-center rounded cursor-pointer"
+          tabIndex={-1}
+          type="button"
+        >
+          <Image
+            src="/icons/closeIcon.svg"
+            width={10}
+            height={10}
+            alt="Close"
+          />
+        </button>
+      )}
+      {open && (
+        <div
+          className={`filter-dropdown absolute left-0 right-0 z-10 bg-linear-to-r from-green3 to-green3 border border-secondary-beige max-h-[300px] overflow-y-auto rounded-md p-2 shadow-md
+            ${dropUp ? "bottom-full mb-1" : "top-full mt-1"}
+          `}
+        >
+          {filteredSessions.length > 0 ? (
+            filteredSessions.map((session) => (
+              <div
+                key={session}
+                className={`px-2 py-2 text-primary-beige cursor-pointer hover:bg-primary-beige hover:text-rich-black rounded ${
+                  inputValue === session
+                    ? "bg-primary-beige text-rich-black"
+                    : ""
+                }`}
+                onMouseDown={() => {
+                  setInputValue(session);
+                  setOpen(false);
+                  onSelect(session);
+                }}
+              >
+                {session}
+              </div>
+            ))
+          ) : (
+            <div className="px-2 py-2 text-primary-beige">Geen resultaten</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PastSessies(): React.ReactElement {
   const [page, setPage] = useState<number>(1);
 
   // --- Dropdown Search State ---
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
-  const [search, setSearch] = useState<string>("");
-  const [open, setOpen] = useState<boolean>(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // Get unique session names
   const uniqueSessions: string[] = Array.from(
     new Set(sessionData.map((s) => s.name))
-  );
-
-  // Filter uniqueSessions by search input
-  const filteredUniqueSessions: string[] = uniqueSessions.filter(
-    (sessionName) => sessionName.toLowerCase().includes(search.toLowerCase())
   );
 
   // Filter sessionData by selected session name
@@ -313,15 +431,7 @@ export default function PastSessies(): React.ReactElement {
   const handleClear = (): void => {
     setSelectedSession(null);
     setPage(1);
-    setSearch("");
   };
-
-  // Focus input when dropdown opens
-  useEffect(() => {
-    if (open) {
-      setTimeout(() => inputRef.current?.focus(), 10);
-    }
-  }, [open, search]);
 
   return (
     <div className="py-5 lg:py-10 grid grid-cols-1 gap-y-3 lg:gap-0 lg:grid-cols-12 ">
@@ -335,79 +445,16 @@ export default function PastSessies(): React.ReactElement {
             <h2 className="font-medium text-lg text-primary-beige mb-4 flex items-center gap-1 justify-between">
               <span>Vind een kamer</span>
             </h2>
-
-            {/* Session Dropdown with search */}
-            <Select
+            {/* Session Data with search functionality */}
+            <FilteredData
+              sessions={uniqueSessions}
               value={selectedSession || ""}
-              onValueChange={(value: string) => {
-                setSelectedSession(value);
+              onSelect={(sessionName) => {
+                setSelectedSession(sessionName);
                 setPage(1);
-                setOpen(false);
               }}
-              open={open}
-              onOpenChange={(isOpen: boolean) => {
-                setOpen(isOpen);
-                if (!isOpen) setSearch("");
-              }}
-            >
-              <div className="relative">
-                <SelectTrigger className="agenda-dropdown w-full cursor-pointer rounded-3xl shadow-none border-primary-beige text-base py-5">
-                  <SelectValue placeholder="Selecteer een kamer" />
-                </SelectTrigger>
-
-                {/* clear button */}
-                <button
-                  onClick={handleClear}
-                  className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige h-5 w-5 flex justify-center items-center rounded cursor-pointer"
-                >
-                  <Image
-                    src="/icons/closeIcon.svg"
-                    alt="Close Icon"
-                    width={10}
-                    height={10}
-                  />
-                </button>
-              </div>
-
-              <SelectContent className="bg-linear-to-r from-green3 to to-green3 border border-secondary-beige max-h-[300px] overflow-y-auto">
-                <div
-                  className="px-2 py-2"
-                  onPointerDown={(e: React.PointerEvent) => e.stopPropagation()}
-                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                >
-                  <input
-                    ref={inputRef}
-                    value={search}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSearch(e.target.value)
-                    }
-                    placeholder="Zoek kamer..."
-                    className="w-full px-2 py-1 rounded border border-primary-beige bg-transparent text-primary-beige"
-                    onFocus={(e: React.FocusEvent) => e.stopPropagation()}
-                    autoFocus
-                  />
-                </div>
-                {filteredUniqueSessions.length > 0 ? (
-                  filteredUniqueSessions.map((sessionName: string) => (
-                    <SelectItem
-                      key={sessionName}
-                      value={sessionName}
-                      className={`text-primary-beige ${
-                        selectedSession === sessionName
-                          ? "bg-primary-beige text-rich-black"
-                          : ""
-                      }`}
-                    >
-                      {sessionName}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <div className="px-2 py-2 text-primary-beige">
-                    Geen resultaten
-                  </div>
-                )}
-              </SelectContent>
-            </Select>
+              onClear={handleClear}
+            />
           </div>
         </div>
       </div>

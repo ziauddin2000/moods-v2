@@ -299,3 +299,8 @@ input[type="checkbox"]:checked + span img {
 .recharts-wrapper .recharts-line-curve {
   stroke: none;
 }
+
+/* Filter DropDown */
+.filter-dropdown::-webkit-scrollbar {
+  display: none;
+}

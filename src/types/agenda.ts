@@ -31,3 +31,9 @@ export interface EventInfo {
     };
   };
 }
+
+export interface ProfileProps {
+  data: DataItem[];
+  handleTherapist: (therapist: string | null) => void;
+  handleClient: (client: string | null) => void;
+}

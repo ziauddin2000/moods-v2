@@ -3,12 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-
-type MenuItem = {
-  label: string;
-  icons: string;
-  href: string;
-};
+import { MenuItem } from "@/types/navbar";
 
 export default function NavBar(): React.ReactElement {
   const [sessiesOpen, setSessiesOpen] = useState<boolean>(false);
