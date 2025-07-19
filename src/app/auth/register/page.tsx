@@ -19,6 +19,7 @@ export default function Register() {
   } = useForm<RegisterFormInput>();
 
   const onSubmit: SubmitHandler<RegisterFormInput> = (data) => {
+    console.log(data);
     router.push("/dashboard");
   };
 

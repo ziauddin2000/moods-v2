@@ -18,6 +18,7 @@ export default function Login() {
   } = useForm<LoginFormInputs>();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+    console.log(data);
     router.push("/dashboard");
   };
 

@@ -9,7 +9,6 @@ interface AgendaCalendarProps {
 }
 
 export default function AgendaCalendar({ date, setDate }: AgendaCalendarProps) {
-  // Safe date selection handler
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (
       selectedDate &&

@@ -158,7 +158,7 @@ export default function Profile({
             {/* clear button */}
             <button
               onClick={handleClearTherapist}
-              className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige opacity-[.5] rounded cursor-pointer"
+              className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige h-5 w-5 flex justify-center items-center rounded cursor-pointer"
             >
               <Image
                 src="/icons/closeIcon.svg"
@@ -219,7 +219,7 @@ export default function Profile({
             {/* clear button */}
             <button
               onClick={handleClearClient}
-              className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige opacity-[.5] rounded cursor-pointer"
+              className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige h-5 w-5 flex justify-center items-center rounded cursor-pointer"
             >
               <Image
                 src="/icons/closeIcon.svg"

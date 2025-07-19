@@ -358,7 +358,7 @@ export default function PastSessies(): React.ReactElement {
                 {/* clear button */}
                 <button
                   onClick={handleClear}
-                  className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige opacity-[.5] rounded cursor-pointer"
+                  className="absolute top-1/2 right-[35px] -translate-y-1/2 text-sm font-medium text-primary-beige h-5 w-5 flex justify-center items-center rounded cursor-pointer"
                 >
                   <Image
                     src="/icons/closeIcon.svg"
