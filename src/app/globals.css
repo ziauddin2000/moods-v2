@@ -15,11 +15,17 @@
   --color-green3: #487a60;
   --color-green4: #6cb791;
   --color-green5: #37815b;
+  --color-gr-light: #5c7e6c;
+  --color-darkgreen: #0c221b;
   --color-rich-black: #060606;
   --color-primary-beige: #f6ece2;
   --color-secondary-beige: #bfb8b1;
   --color-primary-rich-black: #1d1d1d;
   --color-error-color: #d42525;
+  --color-divider-color: #ffffff80;
+  --color-overlay-color: #1d1d1db4;
+  --color-vertical: #2c3a33;
+
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -142,7 +148,6 @@ input[type="checkbox"]:checked + span img {
   }
 }
 
-
 /* Calendar */
 
 .home-calendar td {
@@ -237,4 +242,60 @@ input[type="checkbox"]:checked + span img {
 .full-calendar-wrapper .fc-h-event {
   background-color: transparent;
   border: none;
+}
+
+/* Dropdown select */
+.agenda-dropdown,
+.event-popup {
+  @apply text-primary-beige;
+}
+.agenda-dropdown[data-placeholder],
+.event-popup[data-placeholder] {
+  @apply text-primary-beige;
+}
+
+.agenda-dropdown svg,
+.event-popup svg {
+  @apply text-primary-beige;
+}
+.agenda-dropdown .focus-visible\:border-ring:focus-visible,
+.event-popup .focus-visible\:border-ring:focus-visible {
+  box-shadow: none !important;
+}
+/* Schedule Wrap */
+.schedule-wrap::-webkit-scrollbar {
+  width: 5px;
+}
+
+.schedule-wrap::-webkit-scrollbar-track {
+  @apply bg-green1;
+}
+
+.schedule-wrap::-webkit-scrollbar-thumb {
+  @apply bg-green3;
+}
+
+/* Card Wrapper Button */
+.card-dot-wrapper button {
+  @apply h-full  cursor-pointer;
+}
+
+/* rooms card wrapper */
+.rooms-card-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* Chart Focus */
+.recharts-wrapper svg:focus {
+  outline: none;
+}
+
+.recharts-wrapper svg {
+  outline: none;
+  pointer-events: none;
+}
+.recharts-wrapper .recharts-pie-sector,
+.recharts-wrapper .recharts-bar-rect,
+.recharts-wrapper .recharts-line-curve {
+  stroke: none;
 }

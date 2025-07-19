@@ -1,6 +1,5 @@
 "use client";
 import React, { useRef, useState } from "react";
-
 import interactionPlugin from "@fullcalendar/interaction";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -15,17 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { FiMinus } from "react-icons/fi";
-import { GoPlus } from "react-icons/go";
-import { RxCross1 } from "react-icons/rx";
-
-import AgendaCalendar from "./_components/AgendaCalendar";
-import Profile from "./_components/Profile";
+import AgendaCalendar from "./_components/agendaCalendar";
+import Profile from "./_components/profile";
 import Image from "next/image";
-import CalendarIc from "../../../../public/icons/CalendarIc";
-import ClockIc from "../../../../public/icons/ClockIc";
+import {
+  CalendarEvent,
+  DateClickInfo,
+  EventInfo,
+  TimeSlot,
+} from "@/types/agenda";
 
-function isSameDay(dateA, dateB) {
+function isSameDay(dateA: Date, dateB: Date): boolean {
   return (
     dateA.getFullYear() === dateB.getFullYear() &&
     dateA.getMonth() === dateB.getMonth() &&
@@ -34,15 +33,17 @@ function isSameDay(dateA, dateB) {
 }
 
 export default function Agenda() {
-  const calendarRef = useRef(null);
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [successModal, setsuccessModal] = useState(false);
-  const [selectedTherapist, setSelectedTherapist] = useState(null);
-  const [selectedClient, setSelectedClient] = useState(null);
+  const calendarRef = useRef<FullCalendar>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [successModal, setSuccessModal] = useState<boolean>(false);
+  const [selectedTherapist, setSelectedTherapist] = useState<string | null>(
+    null
+  );
+  const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
-  // Showning Current Date and Day in popup - formatted way in Dutch
-  function formatDutchDate(date) {
+  // Showing Current Date and Day in popup - formatted way in Dutch
+  function formatDutchDate(date: Date): string {
     return date.toLocaleDateString("nl-NL", {
       weekday: "long",
       day: "numeric",
@@ -50,13 +51,15 @@ export default function Agenda() {
     });
   }
 
-  const [formattedDate, setformattedDate] = useState(new Date());
+  const [formattedDate, setFormattedDate] = useState<string>(
+    formatDutchDate(new Date())
+  );
 
   // state for minutes
-  const [minutes, setMinutes] = useState(15);
+  const [minutes, setMinutes] = useState<number>(15);
 
   // selected time
-  const timeSlots = [
+  const timeSlots: TimeSlot[] = [
     { slot: "09:30", booked: false },
     { slot: "10:00", booked: true },
     { slot: "10:30", booked: true },
@@ -89,7 +92,7 @@ export default function Agenda() {
     { slot: "24:00", booked: false },
   ];
 
-  const [selectedTime, setSelectedTime] = useState(timeSlots[0]);
+  const [selectedTime, setSelectedTime] = useState<string>(timeSlots[0].slot);
 
   // Functions to handle increment/decrement
   const handleIncrement = () => setMinutes((prev) => prev + 15);
@@ -97,17 +100,17 @@ export default function Agenda() {
     setMinutes((prev) => (prev > 15 ? prev - 15 : prev));
 
   // Open popup on date click
-  const handleDateClick = (info) => {
-    setSelectedDate(info.dateStr);
-    setSelectedTime(timeSlots[0]);
+  const handleDateClick = (info: DateClickInfo) => {
+    setSelectedDate(new Date(info.dateStr));
+    setSelectedTime(timeSlots[0].slot);
     setIsPopupOpen(true);
 
     const date = new Date(info.dateStr);
-    setformattedDate(formatDutchDate(date));
+    setFormattedDate(formatDutchDate(date));
   };
 
   // events data
-  const dummyEvents = [
+  const dummyEvents: CalendarEvent[] = [
     {
       title: "1010 - ZPM Behandeling",
       start: "2025-07-12T08:30:00",
@@ -263,7 +266,7 @@ export default function Agenda() {
   ];
 
   // Custom design event Show on calendar
-  function renderEventContent(eventInfo) {
+  function renderEventContent(eventInfo: EventInfo) {
     const { event } = eventInfo;
     const start = event.start;
     const end = event.end;
@@ -275,21 +278,12 @@ export default function Agenda() {
       ? end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
       : "";
     return (
-      <div
-        style={{
-          background: "#37815b",
-          borderRadius: "6px",
-          padding: "6px",
-          color: "#fff",
-          fontSize: "14px",
-          width: "100%",
-        }}
-      >
+      <div className="bg-green5 rounded-md p-1.5 text-white text-sm w-full">
         <div className="whitespace-normal">{event.title}</div>
         <div>
           {startTime} - {endTime}{" "}
         </div>
-        <div style={{ fontSize: "12px", color: "#d3d3d3" }}>
+        <div className="text-xs text-primary-beige">
           {event.extendedProps.description}
         </div>
       </div>
@@ -297,12 +291,12 @@ export default function Agenda() {
   }
 
   // Handle Therapist
-  let handleTherapist = (value) => {
+  const handleTherapist = (value: string | null) => {
     setSelectedTherapist(value);
   };
 
   // Handle Client
-  let handleClient = (value) => {
+  const handleClient = (value: string | null) => {
     setSelectedClient(value);
   };
 
@@ -322,14 +316,18 @@ export default function Agenda() {
   });
 
   // Popup calendar date
-  function onDateChange(date) {
-    setSelectedDate(date);
-    setformattedDate(formatDutchDate(new Date(date)));
+  function onDateChange(date: Date | undefined) {
+    setSelectedDate(date || null);
+    if (date) {
+      setFormattedDate(formatDutchDate(date));
+    }
 
     // Go to the selected date in FullCalendar
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
-      calendarApi.gotoDate(date);
+      if (date) {
+        calendarApi.gotoDate(date);
+      }
     }
   }
 
@@ -337,10 +335,11 @@ export default function Agenda() {
     <div className="py-5 lg:py-10 grid grid-cols-1 gap-y-3 lg:gap-0 lg:grid-cols-12 ">
       {/* Left */}
       <div className="lg:col-span-4 xl:col-span-3">
-        <div className="bg-linear-to-bl from-[#0C221B] to-[#5C7E6C] rounded-xl lg:rounded-none lg:rounded-tl-xl lg:rounded-bl-xl p-5 xl:p-10">
-          {/* Agenda Calendar */}
-          <AgendaCalendar date={selectedDate} setDate={onDateChange} />
-          {/* Profile */}
+        <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl lg:rounded-none lg:rounded-tl-xl lg:rounded-bl-xl p-5 xl:p-10">
+          <AgendaCalendar
+            date={selectedDate || undefined}
+            setDate={onDateChange}
+          />
           <Profile
             data={dummyEvents}
             handleTherapist={handleTherapist}
@@ -351,7 +350,7 @@ export default function Agenda() {
 
       {/* Right */}
       <div className="lg:col-span-8 xl:col-span-9">
-        <div className="bg-linear-to-bl from-[#5C7E6C] to-[#0C221B] rounded-xl lg:rounded-none lg:rounded-tr-xl lg:rounded-br-xl p-5 full-calendar-wrapper h-[500px] lg:h-full w-full overflow-x-auto">
+        <div className="bg-linear-to-bl from-gr-light to-darkgreen rounded-xl lg:rounded-none lg:rounded-tr-xl lg:rounded-br-xl p-5 full-calendar-wrapper h-[500px] lg:h-full w-full overflow-x-auto">
           <div style={{ minWidth: 600, width: "100%", height: "100%" }}>
             <FullCalendar
               ref={calendarRef}
@@ -374,7 +373,6 @@ export default function Agenda() {
                 list: "Lijst",
               }}
               height="100%"
-              width="100%"
               dateClick={handleDateClick}
               events={filteredEvents}
               eventContent={renderEventContent}
@@ -387,7 +385,7 @@ export default function Agenda() {
       {isPopupOpen && (
         <div
           className={`
-            fixed z-50 bg-[#1d1d1db4] bg-opacity-80 w-full h-full
+            fixed z-50 bg-overlay-color bg-opacity-80 w-full h-full
             flex justify-center
             overflow-y-auto
             inset-x-0 top-0
@@ -412,7 +410,7 @@ export default function Agenda() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Left Column */}
-            <div className="flex-1 flex flex-col gap-4 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 min-w-[180px] border-b lg:border-b-0 lg:border-r border-[#2C3A33]">
+            <div className="flex-1 flex flex-col gap-4 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 min-w-[180px] border-b lg:border-b-0 lg:border-r border-vertical">
               {/*ZPM Behandeling  */}
               <div>
                 <label className="text-lg text-primary-beige font-medium mb-2 block">
@@ -441,7 +439,12 @@ export default function Agenda() {
                     className="h-6 w-6 cursor-pointer rounded-full flex items-center justify-center bg-green2 text-white text-sm"
                     onClick={handleDecrement}
                   >
-                    <FiMinus />
+                    <Image
+                      src="/icons/minus-dec.svg"
+                      width={15}
+                      height={15}
+                      alt="Minus Icons"
+                    />
                   </button>
                   <span className="text-primary-beige text-base">
                     <span>{minutes}</span> minuten
@@ -450,7 +453,12 @@ export default function Agenda() {
                     className="h-6 w-6 cursor-pointer rounded-full flex items-center justify-center bg-green2 text-white text-sm"
                     onClick={handleIncrement}
                   >
-                    <GoPlus />
+                    <Image
+                      src="/icons/plus-increment.svg"
+                      width={15}
+                      height={15}
+                      alt="Plus Icons"
+                    />
                   </button>
                 </div>
               </div>
@@ -510,13 +518,16 @@ export default function Agenda() {
               </div>
             </div>
             {/* Middle Column */}
-            <div className="order-3 lg:order-2 flex-1 flex flex-col items-center px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 min-w-[250px] border-b lg:border-b-0 lg:border-r border-[#2C3A33]">
+            <div className="order-3 lg:order-2 flex-1 flex flex-col items-center px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 min-w-[250px] border-b lg:border-b-0 lg:border-r border-vertical">
               <div className="font-medium text-lg text-primary-beige mb-4">
                 Selecteer een datum
               </div>
 
               {/* Agenda Calendar */}
-              <AgendaCalendar date={selectedDate} setDate={onDateChange} />
+              <AgendaCalendar
+                date={selectedDate || undefined}
+                setDate={onDateChange}
+              />
 
               {/* Book Btn */}
               <div className="mt-10">
@@ -527,7 +538,7 @@ export default function Agenda() {
                   <button
                     onClick={() => {
                       setIsPopupOpen(false);
-                      setsuccessModal(true);
+                      setSuccessModal(true);
                     }}
                     className="cursor-pointer bg-green5 text-primary-beige px-8 py-3 text-base xl:text-lg font-medium rounded-full  focus:outline-none whitespace-nowrap border-r border-r-secondary-beige"
                   >
@@ -561,10 +572,10 @@ export default function Agenda() {
                 ))}
               </div>
               <button
-                className="mt-8 button-gr"
+                className="mt-8 block w-full h-[50px] px-2 py-1 rounded-full text-primary-beige text-lg font-medium cursor-pointer mb-4 bg-gradient-to-l from-green3 to-green4"
                 onClick={() => {
                   setIsPopupOpen(false);
-                  setsuccessModal(true);
+                  setSuccessModal(true);
                 }}
               >
                 Bevestig afspraak
@@ -576,7 +587,12 @@ export default function Agenda() {
               className="absolute top-3 right-3 sm:top-5 sm:right-5 text-primary-beige text-xl cursor-pointer"
               onClick={() => setIsPopupOpen(false)}
             >
-              <RxCross1 />
+              <Image
+                src="/icons/closeIcon.svg"
+                width={15}
+                height={15}
+                alt="Close Icon"
+              />
             </button>
           </div>
         </div>
@@ -585,9 +601,9 @@ export default function Agenda() {
       {/* Success Modal */}
       {successModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#1d1d1db4] bg-opacity-80"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-overlay-color bg-opacity-80"
           style={{ minHeight: "100vh" }}
-          onClick={() => setsuccessModal(false)}
+          onClick={() => setSuccessModal(false)}
         >
           <div
             className="relative bg-rich-black rounded-2xl shadow-2xl border border-secondary-beige max-w-lg w-[96%] px-8 py-10 flex flex-col items-center"
@@ -596,9 +612,14 @@ export default function Agenda() {
             {/* Close Button */}
             <button
               className="cursor-pointer absolute top-4 right-4 text-primary-beige text-2xl"
-              onClick={() => setsuccessModal(false)}
+              onClick={() => setSuccessModal(false)}
             >
-              <RxCross1 />
+              <Image
+                src="/icons/closeIcon.svg"
+                alt="Close Icon"
+                width={15}
+                height={15}
+              />
             </button>
             {/* Green Check */}
             <div className="flex items-center justify-center w-20 h-20 rounded-full bg-green5 mb-6">
@@ -607,7 +628,7 @@ export default function Agenda() {
                 alt="Green Check"
                 width={100}
                 height={100}
-              ></Image>
+              />
             </div>
             {/* Title */}
             <div className="text-2xl text-primary-beige font-medium mb-4 text-center">
@@ -616,12 +637,22 @@ export default function Agenda() {
             {/* Date & Time */}
             <div className="flex items-center justify-center gap-6 mb-4 text-primary-beige">
               <div className="flex items-center gap-2 text-base">
-                <CalendarIc></CalendarIc>
+                <Image
+                  src="/icons/calendar.svg"
+                  alt="Calendar"
+                  width={20}
+                  height={20}
+                />
                 <span>7 Juli, 2025</span>
               </div>
               <div className="flex items-center gap-2">
-                <ClockIc></ClockIc>
-                <span text-base>10:30 - 11:30 uur</span>
+                <Image
+                  src="/icons/clock.svg"
+                  alt="Clock"
+                  width={20}
+                  height={20}
+                />
+                <span className="text-base">10:30 - 11:30 uur</span>
               </div>
             </div>
             {/* Details */}
@@ -633,7 +664,7 @@ export default function Agenda() {
             {/* Button */}
             <button
               className="cursor-pointer button-gr max-w-[200px] w-full"
-              onClick={() => setsuccessModal(false)}
+              onClick={() => setSuccessModal(false)}
             >
               Terug naar agenda
             </button>

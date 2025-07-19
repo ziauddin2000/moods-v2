@@ -4,8 +4,6 @@ import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import React from "react";
 import { PieData } from "@/types/dashboard";
 
-
-
 export default function PieChartComp(): React.ReactElement {
   const data: PieData[] = [
     { name: "Group A", value: 600 },
@@ -13,10 +11,14 @@ export default function PieChartComp(): React.ReactElement {
     { name: "Group C", value: 1200 },
   ];
 
-  const COLORS = ["#6CB791", "#487A60", "#305140"];
+  const COLORS = [
+    "var(--color-green4)",
+    "var(--color-green3)",
+    "var(--color-green1)",
+  ];
 
   return (
-    <div className="bg-linear-to-bl from-[#0C221B] to-[#5C7E6C] rounded-xl  h-full">
+    <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl  h-full">
       <div className="flex items-center justify-center h-full">
         <div className="h-[300px] w-full relative">
           <ResponsiveContainer width="100%" height="100%">

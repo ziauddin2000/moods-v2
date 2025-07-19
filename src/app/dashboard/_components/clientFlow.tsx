@@ -11,7 +11,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-
 export default function ClientFlow(): React.ReactElement {
   const data: ClientFlowData[] = [
     {
@@ -52,7 +51,7 @@ export default function ClientFlow(): React.ReactElement {
   ];
 
   return (
-    <div className="bg-linear-to-bl from-[#0C221B] to-[#5C7E6C] rounded-xl p-5">
+    <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl p-5">
       <h1 className="text-primary-beige text-2xl font-medium my-4 pb-2 border-b border-secondary-beige">
         Verkoopinformatie
       </h1>

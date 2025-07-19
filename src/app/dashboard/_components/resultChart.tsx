@@ -63,7 +63,7 @@ const data: DataItem[] = [
 ];
 
 const FILTERS = ["Week", "Maand", "Jaar"] as const;
-type FilterType = typeof FILTERS[number];
+type FilterType = (typeof FILTERS)[number];
 
 export default function ResultChart(): React.ReactElement {
   const [selectedType, setSelectedType] = useState<FilterType>("Jaar");
@@ -77,7 +77,7 @@ export default function ResultChart(): React.ReactElement {
     }));
 
   return (
-    <div className="bg-linear-to-bl from-[#0C221B] to-[#5C7E6C] rounded-xl p-5 sm:py-8 sm:px-4 h-full">
+    <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl p-5 sm:py-8 sm:px-4 h-full">
       <h1 className="text-primary-beige text-2xl font-medium mb-4">
         Resultaten
       </h1>
@@ -172,4 +172,3 @@ export default function ResultChart(): React.ReactElement {
     </div>
   );
 }
-  

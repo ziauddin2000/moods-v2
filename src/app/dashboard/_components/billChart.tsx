@@ -9,15 +9,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { BillChartData } from "@/types/dashboard";
-
-
 
 export default function BillChart(): React.ReactElement {
   const data: BillChartData[] = [
@@ -39,7 +32,7 @@ export default function BillChart(): React.ReactElement {
   ];
 
   return (
-    <div className="bg-linear-to-bl from-[#0C221B] to-[#5C7E6C] rounded-xl p-5 h-full">
+    <div className="bg-linear-to-bl from-darkgreen to-gr-light rounded-xl p-5 h-full">
       <h1 className="text-primary-beige text-center text-2xl font-medium mb-4">
         Declarabiliteit
       </h1>

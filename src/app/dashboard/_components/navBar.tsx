@@ -127,7 +127,7 @@ export default function NavBar(): React.ReactElement {
               height={40}
               className="block"
               alt="Logo"
-            ></Image>
+            />
           </Link>
         </div>
         {/* Desktop Nav Links */}
@@ -151,8 +151,13 @@ export default function NavBar(): React.ReactElement {
               onClick={handleSessiesToggle}
               onBlur={() => handleBlur(() => setSessiesOpen(false))}
             >
-               <span>sessies</span>
-              <Image src='./icons/downArrow.svg' width={10} height={10}  alt="Down Arrow"></Image>
+              <span>sessies</span>
+              <Image
+                src="/icons/downArrow.svg"
+                width={10}
+                height={10}
+                alt="Down Arrow"
+              />
             </button>
             {sessiesOpen && (
               <div className="absolute -left-5 mt-1 w-[220px] gap-1 bg-green1 rounded-lg shadow-lg py-2 flex flex-col text-left animate-fade-in z-30 ">
@@ -160,7 +165,7 @@ export default function NavBar(): React.ReactElement {
                   <Link
                     key={idx}
                     href={sessie.href}
-                    className={`px-4 py-2 hover:bg-[#3c4d4654] flex items-center justify-between text-lg font-normal transition-colors ${
+                    className={`px-4 py-2 hover:bg-gr-light flex items-center justify-between text-lg font-normal transition-colors ${
                       isActiveDropdown(sessie.href)
                         ? "text-green4 font-bold"
                         : ""
@@ -206,7 +211,12 @@ export default function NavBar(): React.ReactElement {
               onBlur={() => handleBlur(() => setAccountOpen(false))}
             >
               <span>account</span>
-              <Image src='./icons/downArrow.svg' width={10} height={10}  alt="Down Arrow"></Image>
+              <Image
+                src="/icons/downArrow.svg"
+                width={10}
+                height={10}
+                alt="Down Arrow"
+              />
             </button>
             {accountOpen && (
               <div className="absolute -right-5 mt-1 w-[220px] gap-1 bg-green1 rounded-lg shadow-lg py-2 flex flex-col text-left animate-fade-in z-30 ">
@@ -214,7 +224,7 @@ export default function NavBar(): React.ReactElement {
                   <Link
                     key={idx}
                     href={account.href}
-                    className={`px-4 py-2 hover:bg-[#3c4d4654] flex items-center justify-between text-lg font-normal transition-colors ${
+                    className={`px-4 py-2 hover:bg-gr-light flex items-center justify-between text-lg font-normal transition-colors ${
                       isActiveRoute(account.href) ? "text-green-400" : ""
                     }`}
                     onClick={closeAllMenus}
@@ -229,12 +239,12 @@ export default function NavBar(): React.ReactElement {
                     />
                   </Link>
                 ))}
-                <div className="px-4">
-                  <div className="h-[1px] w-full bg-[#FFFFFF80]"></div>
+                <div className="px-2">
+                  <div className="h-[1px] w-full bg-divider-color"></div>
                 </div>
                 <Link
                   href="/auth"
-                  className="px-4 py-2 hover:bg-[#3c4d4654] flex items-center justify-between text-lg font-normal"
+                  className="px-4 py-2 hover:bg-gr-light flex items-center justify-between text-lg font-normal"
                   onClick={closeAllMenus}
                 >
                   <span className="text-primary-beige">logout</span>
@@ -308,12 +318,12 @@ export default function NavBar(): React.ReactElement {
                 </svg>
               </button>
               {sessiesOpen && (
-                <div className="ml-2 mt-1 flex flex-col rounded-lg shadow-lg py-2 bg-green1">
+                <div className="ml-2 mt-1 flex flex-col gap-[2px] rounded-lg shadow-lg py-2 bg-green1">
                   {sessies.map((sessie, idx) => (
                     <Link
                       key={idx}
                       href={sessie.href}
-                      className={`px-4 py-2 hover:bg-[#3c4d4654] flex items-center justify-between text-lg font-normal transition-colors ${
+                      className={`px-4 py-2 hover:bg-gr-light flex items-center justify-between text-lg font-normal transition-colors ${
                         isActiveDropdown(sessie.href)
                           ? "text-green4 font-bold"
                           : "text-primary-beige"
@@ -357,7 +367,7 @@ export default function NavBar(): React.ReactElement {
             </Link>
             <div className="relative">
               <button
-                className={`cursor-pointer  flex items-center gap-1 transition-colors ${
+                className={`cursor-pointer flex items-center gap-1 transition-colors ${
                   isActiveRoute("/dashboard/account")
                     ? "text-green4"
                     : "text-white"
@@ -380,12 +390,12 @@ export default function NavBar(): React.ReactElement {
                 </svg>
               </button>
               {accountOpen && (
-                <div className="ml-2 mt-1 flex flex-col rounded-lg shadow-lg py-2 bg-green1">
+                <div className="ml-2 mt-1 flex flex-col gap-[2px] rounded-lg shadow-lg py-2 bg-green1">
                   {accounts.map((account, idx) => (
                     <Link
                       key={idx}
                       href={account.href}
-                      className={`px-4 py-2 hover:bg-[#3c4d4654] flex items-center justify-between text-lg font-normal transition-colors ${
+                      className={`px-4 py-2 hover:bg-gr-light flex items-center justify-between text-lg font-normal transition-colors ${
                         isActiveRoute(account.href)
                           ? "text-green4"
                           : "text-primary-beige"
@@ -402,12 +412,12 @@ export default function NavBar(): React.ReactElement {
                       />
                     </Link>
                   ))}
-                  <div className="px-4">
-                    <div className="h-[1px] w-full bg-[#FFFFFF80]"></div>
+                  <div className="px-2">
+                    <div className="h-[1px] w-full bg-divider-color"></div>
                   </div>
                   <Link
                     href="/auth"
-                    className="px-4 py-2 hover:bg-[#3c4d4654] flex items-center justify-between text-lg font-normal"
+                    className="px-4 py-2 hover:bg-gr-light flex items-center justify-between text-lg font-normal"
                     onClick={handleMobileMenuItemClick}
                   >
                     <span className="text-primary-beige">logout</span>

@@ -23,7 +23,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-l from-[#0C221B] to-[#5C7E6C] flex items-center justify-center px-2 py-5">
+    <div className="min-h-screen w-full bg-gradient-to-l from-darkgreen to-gr-light flex items-center justify-center px-2 py-5">
       <div className="max-w-xl w-full bg-primary-rich-black py-16 sm:py-8 px-5 rounded-3xl relative">
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -183,7 +183,10 @@ export default function Register() {
               </span>
             </label>
             {errors.checkbox && (
-              <p className="text-error-color text-base my-1 font-medium text-left pl-8" role="alert">
+              <p
+                className="text-error-color text-base my-1 font-medium text-left pl-8"
+                role="alert"
+              >
                 {errors.checkbox.message}
               </p>
             )}
@@ -194,10 +197,10 @@ export default function Register() {
 
           {/* Login Link */}
           <p className="text-base font-normal text-center text-primary-beige mt-6">
-            Nog geen account? Meld je
+            Nog geen account? Meld je{" "}
             <Link href="/auth" className="underline">
               hier
-            </Link>
+            </Link>{" "}
             in.
           </p>
         </form>

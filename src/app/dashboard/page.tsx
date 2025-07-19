@@ -7,13 +7,12 @@ import PieChartComp from "./_components/pieChart";
 import ResultChart from "./_components/resultChart";
 import StartSession from "./_components/startSession";
 
-
 export default function Dashboard() {
   return (
     <div className="py-5 lg:py-10 grid grid-cols-1 xl:grid-cols-12 gap-3">
       {/* Left  */}
       <div className="w-full xl:col-span-4">
-         <ResultChart />
+        <ResultChart />
       </div>
       {/* Middle  */}
       <div className="xl:col-span-6">
@@ -22,7 +21,7 @@ export default function Dashboard() {
             <HomeCalendar />
           </div>
           <div className="md:col-span-4">
-            <PieChartComp/>
+            <PieChartComp />
           </div>
         </div>
         <ClientFlow />
@@ -31,9 +30,9 @@ export default function Dashboard() {
       <div className="xl:col-span-2 flex flex-col md:flex-row xl:flex-col gap-5 justify-between">
         <StartSession />
         <div className="md:w-[50%] xl:w-full xl:h-full">
-            <BillChart />
+          <BillChart />
         </div>
       </div>
     </div>
-  )
+  );
 }
